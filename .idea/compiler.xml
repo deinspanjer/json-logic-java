@@ -10,7 +10,7 @@
         <module name="jsonlogic-java" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="jsonlogic-java" target="1.8" />
     </bytecodeTargetLevel>
   </component>
