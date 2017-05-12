@@ -1,0 +1,3 @@
+[submodule "json-logic-js"]
+	path = src/main/resources/json-logic-js
+	url = git://github.com/jwadhams/json-logic-js.git
