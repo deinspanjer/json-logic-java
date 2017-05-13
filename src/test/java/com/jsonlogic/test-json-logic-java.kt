@@ -19,6 +19,10 @@ class TestCasesFromJsonLogicJs : StringSpec() {
     val parser = JsonParser()
     fun String.parseJSON(): JsonElement = parser.parse(this)
 
+    interface TestFunc {
+        fun helloWorld(name: String): String
+    }
+
     init {
         "should return" {
             val testCases = mytable(
@@ -50,6 +54,11 @@ class TestCasesFromJsonLogicJs : StringSpec() {
             )
 
             forAll(testCases) { a, b, result -> javaJsonLogic.apply(gson.toJsonTree(a), gson.toJsonTree(b)) shouldBe gson.toJsonTree(result) }
+        }
+
+        "can create" {
+            val testFunc = javaJsonLogic.addFunction("{ helloWorld: function(name) { return 'Hello '+name; } }", TestFunc::class.java)
+            "Hello Daniel" shouldBe testFunc.helloWorld("Daniel")
         }
     }
 

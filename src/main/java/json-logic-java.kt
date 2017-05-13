@@ -30,6 +30,12 @@ object javaJsonLogic {
     fun apply(logic: JsonElement, data: JsonElement?): JsonElement {
         return gson.toJsonTree(jsonLogic.apply(logic.unwrap()!!, data?.unwrap()))
     }
+
+    @Suppress("unused")
+    fun <I> addFunction(definition: String, ifaceClass: Class<I>): I {
+        val encapsulated = """(function() { return $definition; }())"""
+        return js.getInterface(jsEngine.eval(encapsulated), ifaceClass)
+    }
 }
 
 fun JsonElement?.unwrap(): Any? {
