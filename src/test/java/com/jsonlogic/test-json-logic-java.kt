@@ -11,8 +11,8 @@ import io.kotlintest.matchers.shouldBe
 import io.kotlintest.properties.*
 import io.kotlintest.specs.StringSpec
 
-fun <A: JsonElement, B: JsonElement?, C: JsonElement?> mytable(headers: Headers3, vararg rows: Row3<A, B, C>) = Table3(headers, rows.asList())
-fun <A: JsonElement, B: JsonElement?, C: JsonElement?> myrow(a: A, b: B, c: C) = Row3(a as JsonElement,b as JsonElement?,c as JsonElement?)
+fun <A : JsonElement, B : JsonElement?, C : JsonElement?> mytable(headers: Headers3, vararg rows: Row3<A, B, C>) = Table3(headers, rows.asList())
+fun <A : JsonElement, B : JsonElement?, C : JsonElement?> myrow(a: A, b: B, c: C) = Row3(a as JsonElement, b as JsonElement?, c as JsonElement?)
 
 class TestCasesFromJsonLogicJs : StringSpec() {
     val gson = Gson()
@@ -21,6 +21,10 @@ class TestCasesFromJsonLogicJs : StringSpec() {
 
     interface TestFunc {
         fun helloWorld(name: String): String
+    }
+
+    interface Adder {
+        fun plus(a: Int, b: Int): Int
     }
 
     init {
@@ -51,15 +55,29 @@ class TestCasesFromJsonLogicJs : StringSpec() {
                     , myrow(true.toJson(), JsonNull.INSTANCE, true.toJson())
                     , myrow(false.toJson(), JsonNull.INSTANCE, false.toJson())
                     , myrow("""{"and" : [ { ">" : [3,1] }, { "<" : [1,3] } ] }""".parseJSON(), JsonNull.INSTANCE, true.toJson())
+                    , myrow("""{ "==": [ 2, { "+": [ 1, { "var": "one" } ] } ] }""".parseJSON(), """{ "one": 1 }""".parseJSON(), true.toJson())
             )
 
-            forAll(testCases) { a, b, result -> javaJsonLogic.apply(gson.toJsonTree(a), gson.toJsonTree(b)) shouldBe gson.toJsonTree(result) }
+            forAll(testCases) { a, b, result -> JavaJsonLogic.apply(gson.toJsonTree(a), gson.toJsonTree(b)) shouldBe gson.toJsonTree(result) }
         }
 
-        "can create" {
-            val testFunc = javaJsonLogic.addFunction("{ helloWorld: function(name) { return 'Hello '+name; } }", TestFunc::class.java)
+        "can create a new interface" {
+            val testFunc = JavaJsonLogic.getInterface("{ helloWorld: function(name) { return 'Hello '+name; } }", TestFunc::class.java)
             "Hello Daniel" shouldBe testFunc.helloWorld("Daniel")
         }
+
+        "can create a new json-logic operator" {
+            JavaJsonLogic.addOperation("minus", """function(a,b) { return a - b; }""")
+
+            true.toJson() shouldBe JavaJsonLogic.apply("""{ "==": [ 1, { "minus": [ 2, { "var": "one" } ] } ] }""".parseJSON(), """{ "one": 1 }""".parseJSON())
+        }
+
+//        "can create a new json-logic operator2" {
+//            JavaJsonLogic.add_operation("Adder", JavaJsonLogic.getInterface("""{ plus: function(a,b) { return a+b; } }""", Adder::class.java))
+//
+//            true.toJson() shouldBe JavaJsonLogic.apply("""{ "==": [ 2, { "Adder.plus": [ 1, { "var": "one" } ] } ] }""".parseJSON(), """{ "one": 1 }"""
+//                    .parseJSON())
+//        }
     }
 
 }
