@@ -8,15 +8,12 @@ import org.junit.jupiter.api.Assertions.*
 
 internal class JavaJsonLogicTest {
     @org.junit.jupiter.api.Test
-    fun apply() {
-        val logic = Gson().fromJson<JsonElement>("""
-            [true]
-          """)
-        val data = Gson().fromJson<JsonObject>("""
-            {
-            }""")
+    fun simpleApplyJEJO() {
+        val gson = Gson()
+        val logic = gson.fromJson<JsonElement>(""" [true] """)
+        val data = gson.fromJson<JsonObject>(""" {} """)
         val result = JavaJsonLogic.apply(logic, data)
+        print(result)
         assertEquals(jsonObject("0" to true), result)
     }
-
 }
