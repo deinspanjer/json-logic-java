@@ -30,16 +30,16 @@ object JavaJsonLogic {
         JsEngine.getInterface(JsEngine.eval("jsonLogic"), JsonLogic::class.java)
     }
 
-    fun apply(logicStr: String, data: Any?): JsonElement {
-        return gson.toJsonTree(jsonLogic.apply(JSON.parse(logicStr), data))
+    fun apply(logicStr: String, data: Any?): Any? {
+        return jsonLogic.apply(JSON.parse(logicStr), data).unwrap()
     }
 
     fun apply(logic: JsonElement, data: JsonElement?): JsonElement {
-        return gson.toJsonTree(jsonLogic.apply(logic.wrap()!!, data.wrap()))
+        return gson.toJsonTree(jsonLogic.apply(logic.wrap()!!, data.wrap()).unwrap())
     }
 
     fun apply(logic: JsonElement, data: Any?): JsonElement {
-        return gson.toJsonTree(jsonLogic.apply(logic.wrap()!!, data))
+        return gson.toJsonTree(jsonLogic.apply(logic.wrap()!!, data).unwrap())
     }
 
     fun addOperation(operatorName: String, operatorDefinition: String) {

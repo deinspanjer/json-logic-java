@@ -1,6 +1,7 @@
 package com.jsonlogic
 
 import jdk.nashorn.api.scripting.JSObject
+import jdk.nashorn.api.scripting.ScriptObjectMirror
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -27,22 +28,11 @@ internal class JsEngineTest {
         fun testConcat(a: String, b: String): String
     }
 
-    interface Console {
-        fun log(vararg args: Any?)
-        fun warn(vararg args: Any?)
-        fun error(vararg args: Any?)
-    }
-
     @Test
     fun getInterface() {
         JsEngine.eval("function testConcat(a,b){return ''+a+' and '+b}")
         val testConcat = JsEngine.getInterface(TestConcat::class.java)
         assertEquals("foo and bar", testConcat.testConcat("foo", "bar"), "getInterface using global function failed.")
-
-        val console = JsEngine.getInterface(JsEngine.eval("console"), Console::class.java)
-        console.log("log", 1, true)
-        console.warn("warn", arrayOf(1, 2, 3))
-        console.error("error", null)
     }
 
     @Test
